@@ -1,10 +1,10 @@
-import React from "react";
+import { Box, Typography } from "@material-ui/core";
 import PropTypes from "prop-types";
+import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import * as actions from "../actions/nodes";
+import * as actions from "../actions";
 import Node from "../components/Node";
-import { Typography, Box } from "@material-ui/core";
 
 export class Nodes extends React.Component {
   constructor(props) {
@@ -20,6 +20,11 @@ export class Nodes extends React.Component {
   }
 
   toggleNodeExpanded(node) {
+
+    if (node.online && !this.expandedNodeURL) {
+      this.props.actions.getNodeBlocks(node)
+    }
+
     this.setState({
       expandedNodeURL:
         node.url === this.state.expandedNodeURL ? null : node.url,

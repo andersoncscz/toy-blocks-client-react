@@ -1,19 +1,54 @@
-import React from "react";
-import PropTypes from "prop-types";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import {
-  ExpansionPanel,
-  ExpansionPanelSummary,
-  Typography,
-  ExpansionPanelDetails,
-  makeStyles,
   Box,
+
+
+  CircularProgress, ExpansionPanel,
+  ExpansionPanelDetails, ExpansionPanelSummary,
+  makeStyles, Typography
 } from "@material-ui/core";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import PropTypes from "prop-types";
+import React from "react";
 import colors from "../constants/colors";
+import Block from './Block';
 import Status from "./Status";
 
 const Node = ({ node, expanded, toggleNodeExpanded }) => {
   const classes = useStyles();
+
+  function renderExpansionPanelDetails() {
+    if (node.blocks && node.blocks.error) {
+      return (
+        <Box className={classes.blockMessageContainer}>
+          <Typography className={classes.blockMessageError}>{'Sorry, something went wrong.'}</Typography>
+        </Box>
+      )
+    }
+
+    if (node.loading) {
+      return (
+        <Box className={classes.blockLoadingContainer}>
+          <CircularProgress color="primary" />
+        </Box>        
+      )
+
+    }
+
+    if (node.blocks && node.blocks.list.length > 0) {
+      return (
+        <Box className={classes.blockContainer}>
+          {node.blocks.list.map(block => <Block key={block.id} block={block} />)}
+        </Box>        
+      )
+    }    
+
+    return (
+      <Box className={classes.blockMessageContainer}>
+        <Typography className={classes.blockMessageEmpty}>{"There's nothing to show."}</Typography>
+      </Box>      
+    )
+  }
+
   return (
     <ExpansionPanel
       elevation={3}
@@ -46,7 +81,7 @@ const Node = ({ node, expanded, toggleNodeExpanded }) => {
         </Box>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
-        <Typography>Blocks go here</Typography>
+        {renderExpansionPanelDetails()}
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );
@@ -96,6 +131,40 @@ const useStyles = makeStyles((theme) => ({
     color: colors.faded,
     lineHeight: 2,
   },
+  blockContainer: {
+    flex: 1,
+    marginTop: '-12px',
+  },
+  blockMessageContainer: {
+    flex: 1,
+    padding: '8px',
+    alignItems: 'flex-start',
+  },
+  blockLoadingContainer: {
+    display: 'flex',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '8px',
+  },
+  blockMessageError: {
+    fontFamily: 'Roboto',
+    fontStyle: 'normal',
+    fontWeight: 'normal',
+    fontSize: '14px',
+    lineHeight: '20px',        
+    letterSpacing: '0.25px',
+    color: 'red',
+  },
+  blockMessageEmpty: {
+    fontFamily: 'Roboto',
+    fontStyle: 'normal',
+    fontWeight: 'normal',
+    fontSize: '14px',
+    lineHeight: '20px',        
+    letterSpacing: '0.25px',
+    color: '#263238',
+  }
 }));
 
 Node.propTypes = {
